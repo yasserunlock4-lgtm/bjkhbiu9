@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لعبة XO</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
+    
+    <style>
+        /* CSS Code */
+        body {
+            background-color: #12181B;
+            font-family: 'Cairo', sans-serif;
+            color: white;
+            text-align: center;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .background {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 90vh;
+        }
+
+        .title {
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+
+        .container {
+            display: grid;
+            grid-template-columns: repeat(3, 100px );
+            grid-template-rows: repeat(3, 100px);
+            gap: 5px;
+            margin: 20px 0;
+        }
+
+        .tile {
+            width: 100px;
+            height: 100px;
+            background-color: #2a3a42;
+            border-radius: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 3rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .tile:hover {
+            background-color: #3c535f;
+        }
+
+        .playerX {
+            color: #3cc4bf;
+        }
+
+        .playerO {
+            color: #f2b147;
+        }
+
+        .display {
+            font-size: 1.5rem;
+        }
+
+        .controls {
+            margin-top: 20px;
+        }
+
+        #reset {
+            background-color: #f2b147;
+            color: #12181B;
+            border: none;
+            padding: 10px 30px;
+            font-size: 1.2rem;
+            font-family: 'Cairo', sans-serif;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        #reset:hover {
+            transform: scale(1.05);
+        }
+
+        .hide {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <main class="background">
+        <section class="title">
+            <h1>لعبة XO</h1>
+        </section>
+        <section class="display">
+            الدور على اللاعب <span class="display-player playerX">X</span>
+        </section>
+        <section class="container">
+            <div class="tile"></div>
+            <div class="tile"></div>
+            <div class="tile"></div>
+            <div class="tile"></div>
+            <div class="tile"></div>
+            <div class="tile"></div>
+            <div class="tile"></div>
+            <div class="tile"></div>
+            <div class="tile"></div>
+        </section>
+        <section class="display announcer hide"></section>
+        <section class="controls">
+            <button id="reset">إعادة اللعب</button>
+        </section>
+    </main>
+    
+    <script>
+        // JavaScript Code
+        window.addEventListener('DOMContentLoaded', () => {
+            const tiles = Array.from(document.querySelectorAll('.tile'));
+            const playerDisplay = document.querySelector('.display-player');
+            const resetButton = document.querySelector('#reset');
+            const announcer = document.querySelector('.announcer');
+
+            let board = ['', '', '', '', '', '', '', '', ''];
+            let currentPlayer = 'X';
+            let isGameActive = true;
+
+            const PLAYERX_WON = 'PLAYERX_WON';
+            const PLAYERO_WON = 'PLAYERO_WON';
+            const TIE = 'TIE';
+
+            const winningConditions = [
+                [0, 1, 2], [3, 4, 5], [6, 7, 8],
+                [0, 3, 6], [1, 4, 7], [2, 5, 8],
+                [0, 4, 8], [2, 4, 6]
+            ];
+
+            function handleResultValidation() {
+                let roundWon = false;
+                for (let i = 0; i < winningConditions.length; i++) {
+                    const winCondition = winningConditions[i];
+                    const a = board[winCondition[0]];
+                    const b = board[winCondition[1]];
+                    const c = board[winCondition[2]];
+                    if (a === '' || b === '' || c === '') {
+                        continue;
+                    }
+                    if (a === b && b === c) {
+                        roundWon = true;
+                        break;
+                    }
+                }
+
+                if (roundWon) {
+                    announce(currentPlayer === 'X' ? PLAYERX_WON : PLAYERO_WON);
+                    isGameActive = false;
+                    return;
+                }
+
+                if (!board.includes('')) {
+                    announce(TIE);
+                }
+            }
+
+            const announce = (type) => {
+                switch(type){
+                    case PLAYERO_WON:
+                        announcer.innerHTML = 'اللاعب <span class="playerO">O</span> فاز!';
+                        break;
+                    case PLAYERX_WON:
+                        announcer.innerHTML = 'اللاعب <span class="playerX">X</span> فاز!';
+                        break;
+                    case TIE:
+                        announcer.innerText = 'تعادل!';
+                        break;
+                }
+                announcer.classList.remove('hide');
+            };
+
+            const isValidAction = (tile) => {
+                return tile.innerText === '';
+            };
+
+            const updateBoard = (index) => {
+                board[index] = currentPlayer;
+            }
+
+            const changePlayer = () => {
+                playerDisplay.classList.remove(`player${currentPlayer}`);
+                currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
+                playerDisplay.innerText = currentPlayer;
+                playerDisplay.classList.add(`player${currentPlayer}`);
+            }
+
+            const userAction = (tile, index) => {
+                if(isValidAction(tile) && isGameActive) {
+                    tile.innerText = currentPlayer;
+                    tile.classList.add(`player${currentPlayer}`);
+                    updateBoard(index);
+                    handleResultValidation();
+                    if (isGameActive) {
+                        changePlayer();
+                    }
+                }
+            }
+            
+            const resetBoard = () => {
+                board = ['', '', '', '', '', '', '', '', ''];
+                isGameActive = true;
+                announcer.classList.add('hide');
+
+                if (currentPlayer === 'O') {
+                    changePlayer();
+                }
+
+                tiles.forEach(tile => {
+                    tile.innerText = '';
+                    tile.classList.remove('playerX');
+                    tile.classList.remove('playerO');
+                });
+            }
+
+            tiles.forEach( (tile, index) => {
+                tile.addEventListener('click', () => userAction(tile, index));
+            });
+
+            resetButton.addEventListener('click', resetBoard);
+        });
+    </script>
+</body>
+</html>
