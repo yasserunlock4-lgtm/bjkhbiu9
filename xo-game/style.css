@@ -1,0 +1,88 @@
+/* تصميم أساسي للجسم والخلفية */
+body {
+    background-color: #12181B;
+    font-family: 'Cairo', sans-serif;
+    color: white;
+    text-align: center;
+    margin: 0;
+    padding: 20px;
+}
+
+.background {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    min-height: 90vh;
+}
+
+.title {
+    font-size: 2rem;
+    margin-bottom: 10px;
+}
+
+/* تصميم لوحة اللعب */
+.container {
+    display: grid;
+    grid-template-columns: repeat(3, 100px );
+    grid-template-rows: repeat(3, 100px);
+    gap: 5px;
+    margin: 20px 0;
+}
+
+.tile {
+    width: 100px;
+    height: 100px;
+    background-color: #2a3a42;
+    border-radius: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 3rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.tile:hover {
+    background-color: #3c535f;
+}
+
+/* تصميم اللاعبين X و O */
+.playerX {
+    color: #3cc4bf; /* لون سماوي */
+}
+
+.playerO {
+    color: #f2b147; /* لون برتقالي */
+}
+
+/* تصميم شريط الحالة والأزرار */
+.display {
+    font-size: 1.5rem;
+}
+
+.controls {
+    margin-top: 20px;
+}
+
+#reset {
+    background-color: #f2b147;
+    color: #12181B;
+    border: none;
+    padding: 10px 30px;
+    font-size: 1.2rem;
+    font-family: 'Cairo', sans-serif;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+#reset:hover {
+    transform: scale(1.05);
+}
+
+/* لإخفاء وإظهار رسالة الفائز */
+.hide {
+    display: none;
+}
